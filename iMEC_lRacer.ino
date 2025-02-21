@@ -20,9 +20,6 @@
 #define BLUE 3
 #define YELLOW 4
 
-float right_control = 0;
-float left_control = 0;
-
 //Create a servo object to control the servo
 Servo left_servo;
 Servo right_servo;
@@ -31,7 +28,6 @@ Servo right_servo;
 Adafruit_TCS34725 tcs = Adafruit_TCS34725();
 
 // Color Struct
-
 struct color {
   float R;
   float G;
@@ -40,25 +36,23 @@ struct color {
 };
 
 
-//global
+//global(s)
 color red_tape;
 color green_tape;
 color yellow_tape;
 color measured;
+float right_control = 0;
+float left_control = 0;
 
 
 void setup() {
   // put your setup code here, to run once:
 
+  //Setup Servos---------------------------------------------------------------- 
   left_servo.attach(9);       // attaches the servo on pin 9 to the servo object
-  right_servo.attach(8);      // attaches the servo on pin 9 to the servo object
-  //command_zero(left_servo);   // Commands servo to its intial position
-  //command_zero(right_servo);  // Commands servo to its intial position
-
-  //command_forward(left_servo, right_servo);
-
-  //Color Junk
-
+  right_servo.attach(8);      // attaches the servo on pin 8 to the servo object
+  
+  //Stucts to store the color values--------------------------------------------
 
   //Assign Values to the red tape struct
 
@@ -88,26 +82,22 @@ void setup() {
   measured.B = 0;
   measured.C = 0;
 
-
-  //Color coms
-
-
+  // Start Color Sensor
   tcs.begin();
   tcs.setIntegrationTime(TCS34725_INTEGRATIONTIME_154MS);
-
-  //debug
-  //Serial.begin(9600);
 
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
 
-  //Color Data
+  //Color Data - Working Data --------------------------------------
   uint16_t r, g, b, c;
   float cd_red;
   float cd_green;
   float cd_yellow;
+
+  //Read Values from color sensor ----------------------------------
   delay(155);
   tcs.getRawData(&r, &g, &b, &c);
 
@@ -116,27 +106,14 @@ void loop() {
   measured.B = (float)b;
   measured.C = (float)c;
 
+
+  //Calculate distance to each color.  
   cd_red = color_distance(measured, red_tape);
   cd_green = color_distance(measured, green_tape);
   cd_yellow = color_distance(measured, yellow_tape);
 
 
-  //Debug
-  /* 
-    Serial.print("Color Distance red: ");
-    Serial.print(cd_red, DEC);
-    Serial.print(" ");
-    Serial.print("Color Distance green: ");
-    Serial.print(cd_green, DEC);
-    Serial.print(" ");
-    Serial.print("Color Distance yellow: ");
-    Serial.print(cd_yellow, DEC);
-    Serial.print(" ");
-    Serial.println(" ");
-    delay(1000);
-  */ 
-
-  //Simple Control
+  //Simple Control ----------------------------------------------------
 
   simple_control(cd_red, cd_green, cd_yellow, left_control, left_servo, right_control, right_servo);  
 
@@ -268,5 +245,23 @@ void simple_control(float distanceRed, float distanceGreen, float distanceYellow
     Serial.print(cd, DEC);
     Serial.print(" ");
     Serial.println(" ");
+  }
+
+  void db_print_color_distance(float cd_red, float cd_green, float cd_yellow)
+  {
+    //Debug
+    Serial.begin(9600);
+    Serial.print("Color Distance red: ");
+    Serial.print(cd_red, DEC);
+    Serial.print(" ");
+    Serial.print("Color Distance green: ");
+    Serial.print(cd_green, DEC);
+    Serial.print(" ");
+    Serial.print("Color Distance yellow: ");
+    Serial.print(cd_yellow, DEC);
+    Serial.print(" ");
+    Serial.println(" ");
+    delay(1000); 
+    Serial.end();
   }
 
