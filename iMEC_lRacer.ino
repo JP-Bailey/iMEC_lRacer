@@ -91,31 +91,13 @@ void setup() {
 void loop() {
   // put your main code here, to run repeatedly:
 
-  //Color Data - Working Data --------------------------------------
-  uint16_t r, g, b, c;
-  float cd_red;
-  float cd_green;
-  float cd_yellow;
-
-  //Read Values from color sensor ----------------------------------
-  delay(155);
-  tcs.getRawData(&r, &g, &b, &c);
-
-  measured.R = (float)r;
-  measured.G = (float)g;
-  measured.B = (float)b;
-  measured.C = (float)c;
+  //2. Read Values from color sensor ----------------------------------
 
 
-  //Calculate distance to each color.  
-  cd_red = color_distance(measured, red_tape);
-  cd_green = color_distance(measured, green_tape);
-  cd_yellow = color_distance(measured, yellow_tape);
+  //3. Calculate distance to each color.  
 
 
-  //Simple Control ----------------------------------------------------
-
-  simple_control(cd_red, cd_green, cd_yellow, left_control, left_servo, right_control, right_servo);  
+  //1. Control Servos 
 
   delay(5);
 }
